@@ -1,0 +1,14 @@
+Apache MNN
+Copyright 2018-2024 Alibaba Group Holding Limited
+
+This directory contains modifications to the MNN project.
+Original source: https://github.com/alibaba/MNN
+
+Modified files:
+- apps/Android/MnnLlmChat/app/src/main/cpp/llm_session.cpp
+  - Fixed multimodal context accumulation bug in multi-turn dialogue
+  - Added history cleanup to prevent old images from being re-loaded
+  - Preserved full conversation history for both multimodal and text-only branches
+
+Modifications are marked with "CRITICAL FIX #1-4" comments in the source code.
+All modifications follow the Apache License 2.0 of the original project.

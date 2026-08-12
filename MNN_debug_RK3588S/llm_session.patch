@@ -1,0 +1,96 @@
+--- a/apps/Android/MnnLlmChat/app/src/main/cpp/llm_session.cpp
++++ b/apps/Android/MnnLlmChat/app/src/main/cpp/llm_session.cpp
+@@ -7,6 +7,7 @@
+ #include <chrono>
+ #include <fstream>
+ #include <algorithm>
++#include <regex>
+ #include "MNN/MNNForwardType.h"
+ #include "MNN/expr/ExecutorScope.hpp"
+ #include "mls_log.h"
+@@ -289,29 +290,72 @@
+     history_.emplace_back("user", getUserString(prompt.c_str(), false, is_r1_));
+ #endif
+     MNN_DEBUG("submitNative history count %zu", history_.size());
+-    
+-    // Generate full prompt string using Prompt::applyTemplate
+-    std::string full_prompt_text;
++
++    // CRITICAL FIX #1: Clean multimodal tags from all previous turns in history_
++    // to prevent re-loading old images in subsequent rounds (both multimodal and text branches).
++    // Keep ONLY the current user message intact for processing.
++    if (history_.size() > 1) {
++        std::regex multimodal_tag_regex("<(img|video|audio)>.*?</\\1>");
++        for (size_t i = 0; i < history_.size() - 1; ++i) {
++            history_[i].second = std::regex_replace(history_[i].second, multimodal_tag_regex, "");
++        }
++    }
++
++    // CRITICAL FIX #2: Only process multimodal content from the CURRENT user message,
++    // not from accumulated history. This prevents old images from being re-loaded
++    // and mixed with new ones.
++    const std::string& current_user_msg = history_.back().second;
++    auto multimodal_result = processMultimodalPrompt(current_user_msg);
++
++    // Build prompt_string_for_debug from full history for logging
+     for (auto & it : history_) {
+-        full_prompt_text += it.second;
+         prompt_string_for_debug += it.second;
+     }
+-    
+     MNN_DEBUG("submitNative prompt_string_for_debug count %s max_new_tokens_:%d", prompt_string_for_debug.c_str(), max_new_tokens_);
+-    
+-    // Check for multimodal content in the full prompt
+-    auto multimodal_result = processMultimodalPrompt(full_prompt_text);
++
+     restoreAndroidSteppingStatusIfNeeded(llm_);
+     if (multimodal_result.has_multimodal) {
+-        MNN_DEBUG("Detected multimodal content, using multimodal API prompt %s with %zu images",
+-             multimodal_result.multimodal_prompt.prompt_template.c_str(),
++        MNN_DEBUG("Detected multimodal content in current message, using multimodal API with %zu images",
+              multimodal_result.multimodal_prompt.images.size());
+         if (!multimodal_result.error_message.empty()) {
+             MNN_ERROR("Multimodal processing errors: %s", multimodal_result.error_message.c_str());
+         }
+-        // Prefill only. Stepping decode one token at a time via llm_->generate(1) keeps
+-        // streaming active without letting the engine mark the session as finished up front.
+-        llm_->response(multimodal_result.multimodal_prompt, &output_ostream, "<eop>", 0);
++
++        // Build complete conversation history with multimodal content:
++        // 1. Strip multimodal tags from all previous turns (avoid re-loading old images)
++        // 2. Keep current turn's multimodal content intact
++        // 3. Apply chat template to get properly formatted multi-turn prompt
++        // 4. Manually tokenize to avoid double template application in llm_->response(MultimodalPrompt)
++        std::vector<PromptItem> history_for_multimodal;
++        std::regex multimodal_tag_regex("<(img|video|audio)>.*?</\\1>");
++
++        // Add all previous messages with multimodal tags stripped
++        for (size_t i = 0; i < history_.size() - 1; ++i) {
++            std::string cleaned_content = std::regex_replace(history_[i].second, multimodal_tag_regex, "");
++            history_for_multimodal.emplace_back(history_[i].first, cleaned_content);
++        }
++
++        // Add current user message with multimodal content (use the processed template from multimodal_result)
++        history_for_multimodal.emplace_back("user", multimodal_result.multimodal_prompt.prompt_template);
++
++        // Apply chat template to the complete history
++        // This ensures proper formatting with role markers, system prompt, etc.
++        std::string formatted_prompt = llm_->apply_chat_template(history_for_multimodal);
++
++        // Update the multimodal prompt with formatted template
++        multimodal_result.multimodal_prompt.prompt_template = formatted_prompt;
++
++        MNN_DEBUG("Multimodal prompt with complete history, final template length: %zu",
++                  multimodal_result.multimodal_prompt.prompt_template.length());
++
++        // Manually tokenize the multimodal prompt to avoid double template application
++        // (llm_->response(MultimodalPrompt) would call apply_chat_template again)
++        std::vector<int> input_ids = llm_->tokenizer_encode(multimodal_result.multimodal_prompt);
++
++        MNN_DEBUG("Tokenized multimodal prompt into %zu tokens", input_ids.size());
++
++        // Call response with token IDs directly, bypassing template application
++        llm_->response(input_ids, &output_ostream, "<eop>", 0);
+     } else {
+         MNN_DEBUG("No multimodal content detected, using regular text API");
+         llm_->response(history_, &output_ostream, "<eop>", 0);
