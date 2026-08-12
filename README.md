@@ -26,7 +26,7 @@
 
 本次调研基于 RK3588S 平台（8 核 CPU，12GB 内存，Android 12）完成全部实测工作。核心硬件结论如下：
 
-![图 20](images/fig20.png)
+<img src="images/fig20.png" width="100%" alt="图 20">
 
 **平台能力边界：**
 
@@ -42,7 +42,7 @@
 
 #### 1.2.2 成功标准
 
-![图 21](images/fig21.png)
+<img src="images/fig21.png" width="100%" alt="图 21">
 
 **P0（必须达成）：**
 
@@ -304,13 +304,13 @@ MiniCPM APK、PocketPal开包即用
 
 ### 3.2 推理引擎路线
 
-![图 1](images/fig01.png)
+<img src="images/fig01.png" width="100%" alt="图 1">
 
 #### 3.2.1 路线一：GGUF + llama.cpp
 
 **技术架构**
 
-![图 2](images/fig02.png)
+<img src="images/fig02.png" width="100%" alt="图 2">
 
 **关键技术特点**
 
@@ -350,7 +350,7 @@ GGUF + llama.cpp 是当前阶段的主力路线。它不依赖 NPU 或 GPU，仅
 
 **技术架构**
 
-![图 3](images/fig03.png)
+<img src="images/fig03.png" width="100%" alt="图 3">
 
 **关键技术特点**
 
@@ -391,7 +391,7 @@ MNN 是另一条已验证可行的路线，与 GGUF+llama.cpp 形成互补。其
 
 面壁 MiniCPM-V-demo APK 不是一条独立的技术路线，而是 路线一（GGUF + llama.cpp）的产品化封装：
 
-![图 4](images/fig04.png)
+<img src="images/fig04.png" width="100%" alt="图 4">
 
 它本质上就是把 llama.cpp 编译成 Android 动态库（.so），用 Java/Kotlin 写了一个 UI 外壳，打包成 APK。技术上仍是 GGUF + llama.cpp 路线，只是以产品化形态交付。
 
@@ -513,45 +513,45 @@ MNN 是另一条已验证可行的路线，与 GGUF+llama.cpp 形成互补。其
 
 #### 4.2.1 面壁智能（MiniCPM 系列）
 
-![图 5](images/fig05.png)
+<img src="images/fig05.png" width="100%" alt="图 5">
 
 #### 4.2.2 阿里云（Qwen 系列）
 
-![图 6](images/fig06.png)
+<img src="images/fig06.png" width="100%" alt="图 6">
 
 > **推测框：** Qwen2-VL-2B-Instruct-MNN 功能残缺推测为MNN的APK本身问题，社区人员仅在旗舰款手机上测试过应用与模型性能，不具备参考价值，git社区中也存在对于APK本身问题以及NPU调用的讨论。
 
 **Qwen3-VL-2B-Thinking-MNN实测case：**
 
-![Qwen3-VL-2B-Thinking 实测 case 1](images/fig07.png)
+<img src="images/fig07.png" width="100%" alt="Qwen3-VL-2B-Thinking 实测 case 1">
 
-![Qwen3-VL-2B-Thinking 实测 case 2](images/fig08.png)
+<img src="images/fig08.png" width="100%" alt="Qwen3-VL-2B-Thinking 实测 case 2">
 
 #### 4.2.3 智谱AI（GLM 系列）
 
-![图 9](images/fig09.png)
+<img src="images/fig09.png" width="100%" alt="图 9">
 
 > **备注：** GLM-Edge-V-5B与GLM-Edge-4B-Chat属于官方给定的PC端侧模型，无安卓端复现示例
 
 **GLM-Edge-V-2B纯文本case：**
 
-![GLM-Edge-V-2B 纯文本 case 1](images/fig10.png)
+<img src="images/fig10.png" width="100%" alt="GLM-Edge-V-2B 纯文本 case 1">
 
-![GLM-Edge-V-2B 纯文本 case 2](images/fig11.png)
+<img src="images/fig11.png" width="100%" alt="GLM-Edge-V-2B 纯文本 case 2">
 
 **GLM-Edge-V-2B多模理解case：**
 
-![GLM-Edge-V-2B 多模理解 case 1](images/fig12.jpeg)
+<img src="images/fig12.jpeg" width="100%" alt="GLM-Edge-V-2B 多模理解 case 1">
 
-![GLM-Edge-V-2B 多模理解 case 2](images/fig13.png)
+<img src="images/fig13.png" width="100%" alt="GLM-Edge-V-2B 多模理解 case 2">
 
 #### 4.2.4 深度求索（DeepSeek 系列）
 
-![图 14](images/fig14.png)
+<img src="images/fig14.png" width="100%" alt="图 14">
 
 #### 4.2.5 LFM 系列（国际模型，供参考）
 
-![图 15](images/fig15.png)
+<img src="images/fig15.png" width="100%" alt="图 15">
 
 #### 4.2.6 上海AI实验室（Intern 系列）
 
@@ -589,15 +589,15 @@ MNN 是另一条已验证可行的路线，与 GGUF+llama.cpp 形成互补。其
 
 本次测试过程中，5款模型验证通过，2款模型功能残缺通过；
 
-![图 16](images/fig16.png)
+<img src="images/fig16.png" width="100%" alt="图 16">
 
 **下图展示本次实测过程中比较具备代表性的6款模型的综合表现**
 
-![图 17](images/fig17.png)
+<img src="images/fig17.png" width="100%" alt="图 17">
 
 #### 表 1：原始裸数据表
 
-![图 18](images/fig18.png)
+<img src="images/fig18.png" width="100%" alt="图 18">
 
 注释：
 
@@ -615,7 +615,7 @@ MNN 是另一条已验证可行的路线，与 GGUF+llama.cpp 形成互补。其
 
 #### 表 2：归一化数据表（0‑10 分制）
 
-![图 19](images/fig19.png)
+<img src="images/fig19.png" width="100%" alt="图 19">
 
 ##### 归一化口径说明
 
