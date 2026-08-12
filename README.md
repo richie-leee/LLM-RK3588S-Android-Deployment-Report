@@ -1,0 +1,2 @@
+# Report-on-On-Device-Deployment-of-Large-scale-Models-on-Android-RK3588S-Platform-
+本项目基于RK3588S安卓平台，调研国产离线多模态大模型端侧部署方案，实现离线识图、视觉问答、多轮对话功能。验证两条可行技术路线：GGUF+llama.cpp开放生态兼容性强，阿里MNN配套开箱APK；设备GPU推理弱于CPU，内置NPU因格式、权限壁垒暂无法落地。 实测8家厂商31款国产模型，筛除7B以上、云端、需Root的方案，仅智谱GLM-Edge-V-2B、面壁MiniCPM-1.2B两款满足产品落地标准，MiniCPM-V-4为备选；多数模型存在闪退、输出乱码、配置缺失缺陷。 当前端侧模型仅能基础运行，产品化成熟度不足。主力推荐GGUF+llama.cpp路线，支持命令行、服务、自研APK多形态交付，后续可开展线程调优、NPU生态跟踪等验证工作。
